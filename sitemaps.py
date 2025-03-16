@@ -1,10 +1,8 @@
-import requests
-import re 
-import itertools
-from bs4 import BeautifulSoup # Imports bs4
-import wget # Imports wget
-
 def sitemaps():
+    '''
+    Docstring
+    '''
+
     months = [
         "January",
         "February",
