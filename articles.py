@@ -66,83 +66,90 @@ def articles():
     '''
 
     mday = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    
     [cnn_dict, nyt_dict, bi_dict, nyp_dict, dm_dict, fox_links] = sitemaps.sitemaps()
 
-    # ---------------- CNN --------------- #
-    cnn_articles = {} 
 
-    titles = []
-    links = []
-    dates = []
-    test_dates = []
+
+
+
+    # ---------------- CNN --------------- #
+
+    cnn_articles = {}    # Input: 20xx-xx-xx     Output: [(title 1, link 1), (title 2, link 2), ...]
+
+    titles = [] # all article titles
+    links = [] # all article links
+    dates = [] # dates for those articles
+
+
 
     for year in range(2014,2024):
         for month in range(12):
 
             r = requests.get(cnn_dict[year][month])
             soup = BeautifulSoup(r.text, "html.parser")
-            test = soup.find_all("li")
+            lis = soup.find_all("li") # All links are in lis that have a date span & a sitemap-link span
 
-            for i in test:
-                for j in i.descendants:
-                    data = str(j)
+            for i in lis:
+                for j in i.descendants: # gets all spans in the lis
+                    data = str(j) # current span as string
+
+                    # gets date from date span 
                     if ("class=\"date\"" in data):
+                        
                         dates.append(data[data.index("20"):data.index("20")+10])
-                        test_dates.append(data[data.index("20"):data.index("20")+10])
+
+                    # gets link & title from sitemap-link span
                     if "sitemap-link" in data:
 
-                        titles.append(
-                            data[
-                                36
-                                + data[36:].index('"')
-                                + 2 : 36
-                                + data[36:].index("<")
-                            ]
-                        )
-
+                        titles.append(data[36 + data[36:].index('"') + 2 : 36 + data[36:].index("<")])
                         links.append(data[36 : 36 + data[36:].index('"')])
 
+                        # the date from date structure is when it was updated most recently, not always when it was posted,
+                        # so in the cases where the link has the date it was posted we refer to the link's date over the one 
+                        # from the date span
                         if "com/20" in data:
                             dates[-1] = data[data.index("com/20")+4:data.index("com/20")+14].replace('/','-')
             
-    date_set = set(dates)
-    date_set = list(date_set)
+    # list of all unique dates
+    date_set = list(set(dates))
 
-    temp = [[(titles[j],links[j]) for j in range(len(dates)) if dates[j] == i] for i in date_set]
-            
+    # for each unique date, creates a list of tuples with the title & link for every article that has that date
+    article_lists = [[(titles[j],links[j]) for j in range(len(dates)) if dates[j] == i] for i in date_set]
+    
+    # moves the lists for each day into dictionary (could combine this and previous line in the future)
     for i in range(len(date_set)):
-        cnn_articles[date_set[i]] = temp[i]
+        cnn_articles[date_set[i]] = article_lists[i]
+    
+    # prints all data gathered
+    # for year in range(2014,2024):
+    #     for month in range(1,13):
+    #         for day in range(1, mday[month-1]+1):
+    #             try:
+    #                 print(cnn_articles[f"{year}-{str(month).zfill(2)}-{str(day).zfill(2)}"])
+    #             except:
+    #                 print(f"{year}-{str(month).zfill(2)}-{str(day).zfill(2)}" in date_set)
+    #                 print(f"{year}-{str(month).zfill(2)}-{str(day).zfill(2)}" in test_dates)
+    #                 print(f"{year}-{str(month).zfill(2)}-{str(day).zfill(2)}     BROKE")
+    
 
-    for year in range(2014,2024):
-        for month in range(1,13):
-            for day in range(1, mday[month-1]+1):
-                try:
-                    print(cnn_articles[f"{year}-{str(month).zfill(2)}-{str(day).zfill(2)}"])
-                except:
-                    print(f"{year}-{str(month).zfill(2)}-{str(day).zfill(2)}" in date_set)
-                    print(f"{year}-{str(month).zfill(2)}-{str(day).zfill(2)}" in test_dates)
-                    print(f"{year}-{str(month).zfill(2)}-{str(day).zfill(2)}     BROKE")
-
-    # ---------------- Next News --------------- #
 
 
-    #print(cnn_articles)
 
-    # r = requests.get(nyt_dict[2024][1][0])
-    # soup = BeautifulSoup(r.text, "html.parser")
-    # # print(r.text)
-    # test = [i for i in soup.find_all("li")]
-    # titles = []
-    # links = []
-    # dates = []
-    # for i in test:
-    #     test = str(i.contents[0])
-    #     if ("https:" in test) & (".html" in test) & ("2024/01/01" in test):
-    #         links.append(test[test.index("https:") : test.index(".html")])
-    #         titles.append(test[test.index(">") + 1 : test[4:].index("<") + 4])
-    #         dates.append("2024-01-01")
 
-    # print(titles)
-    # print(links)
-    # print(dates)
+
+    # ---------------- NYT --------------- #
+    nyt_articles = {}    # Input: 20xx-xx-xx     Output: [(title 1, link 1), (title 2, link 2), ...]
+
+    # ---------------- BI --------------- #
+    bi_articles = {}     # Input: 20xx-xx-xx     Output: [(title 1, link 1), (title 2, link 2), ...]
+
+    # ---------------- NYP --------------- #
+    nyp_articles = {}    # Input: 20xx-xx-xx     Output: [(title 1, link 1), (title 2, link 2), ...]
+
+    # ---------------- DM --------------- #
+    dm_articles = {}     # Input: 20xx-xx-xx     Output: [(title 1, link 1), (title 2, link 2), ...]
+
+    # ---------------- FOX --------------- #
+    fox_articles = {}    # Input: 20xx-xx-xx     Output: [(title 1, link 1), (title 2, link 2), ...]
+
+    return [cnn_articles, nyt_articles, bi_articles, nyp_articles, dm_articles, fox_articles]
