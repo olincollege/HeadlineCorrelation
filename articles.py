@@ -4,7 +4,7 @@ import itertools
 from bs4 import BeautifulSoup # Imports bs4
 import sitemaps
 
-def articles(which):
+def articles(which,start_year,end_year,start_month,end_month):
     '''
     ### Code to get data
     CNN:
@@ -81,8 +81,8 @@ def articles(which):
     dates = [] # dates for those articles
 
     if which[0]:
-        for year in range(2014,2024):
-            for month in range(12):
+        for year in range(start_year,end_year+1):
+            for month in range(start_month-1,end_month):
 
                 r = requests.get(cnn_dict[year][month])
                 soup = BeautifulSoup(r.text, "html.parser")
@@ -129,8 +129,8 @@ def articles(which):
     dates = [] # dates for those articles
 
     if which[1]:
-        for year in range(2014,2024):
-            for month in range(1,13):
+        for year in range(start_year,end_year+1):
+            for month in range(start_month,end_month+1):
                 for day in range(mday[month-1]):
 
                     r = requests.get(nyt_dict[year][month][day])
