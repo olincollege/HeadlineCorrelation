@@ -309,8 +309,50 @@ def articles(which,start_year,end_year,start_month,end_month):
 
 
 
-    # ---------------- DM --------------- #
+    # ---------------- DM --------------- #                     not perfect (updated not published)             also very inefficient
     dm_articles = {}     # Input: 20xx-xx-xx     Output: [(title 1, link 1), (title 2, link 2), ...]
+
+    titles = [] # all article titles
+    links = [] # all article links
+    dates = [] # dates for those articles
+
+    if which[4]:
+        for year in range(start_year,end_year+1):
+            for month in range(start_month,end_month+1):
+                for day in range(mday[month-1]):
+
+                    r = requests.get(dm_dict[year][month][day])
+                    soup = BeautifulSoup(r.text, 'html.parser')
+                    a_s = soup.find_all("a") # All links are in lis that have 1 <a> with an href (link) & title
+
+                    for a in a_s:
+                        a = str(a)
+
+                        if ("article-" in a) & ("span" not in a):
+                            titles.append(a[
+                                a.index("\">")+2
+                                :
+                                a.index("</a>")
+                            ])
+                            links.append('https://www.dailymail.co.uk' + a[
+                                a.index("<a href=")+10
+                                :
+                                a.index(".html\"")+5
+                            ])
+                            dates.append(f"{year}-{str(month).zfill(2)}-{str(day+1).zfill(2)}")
+
+        # list of all unique dates
+        date_set = list(set(dates))
+        date_set.sort()
+
+        # for each unique date, creates a list of tuples with the title & link for every article that has that date then adds that to dictionary
+        # Enumerate didn't works because of the large size :P
+        for i in range(len(date_set)):
+            dm_articles[date_set[i]] = [(titles[j],links[j]) for j in range(len(dates)) if dates[j] == date_set[i]]
+
+
+
+
 
     # ---------------- FOX --------------- #
     fox_articles = {}    # Input: 20xx-xx-xx     Output: [(title 1, link 1), (title 2, link 2), ...]
