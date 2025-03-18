@@ -95,19 +95,35 @@ def articles(which,start_year,end_year,start_month,end_month):
                         # gets date from date span 
                         if ("class=\"date\"" in data):
                             
-                            dates.append(data[data.index("20"):data.index("20")+10])
+                            dates.append(data[
+                                data.index("20")
+                                :
+                                data.index("20")+10
+                            ])
 
                         # gets link & title from sitemap-link span
                         if "sitemap-link" in data:
 
-                            titles.append(data[36 + data[36:].index('"') + 2 : 36 + data[36:].index("<")])
-                            links.append(data[36 : 36 + data[36:].index('"')])
+                            titles.append(data[
+                                36 + data[36:].index('"') + 2 
+                                :
+                                36 + data[36:].index("<")
+                            ])
+                            links.append(data[
+                                36
+                                :
+                                36 + data[36:].index('"')
+                            ])
 
                             # the date from date structure is when it was updated most recently, not always when it was posted,
                             # so in the cases where the link has the date it was posted we refer to the link's date over the one 
                             # from the date span
                             if "com/20" in data:
-                                dates[-1] = data[data.index("com/20")+4:data.index("com/20")+14].replace('/','-')
+                                dates[-1] = data[
+                                    data.index("com/20")+4
+                                    :
+                                    data.index("com/20")+14
+                                ].replace('/','-')
                 
         # list of all unique dates
         date_set = list(set(dates))
@@ -141,16 +157,40 @@ def articles(which,start_year,end_year,start_month,end_month):
                         a = str(li.contents)
 
                         if f"https://www.nytimes.com/{year}/{str(month).zfill(2)}/{str(day+1).zfill(2)}" in a:
-                            titles.append(a[a.index("\">")+2:a.index("</a>")])
-                            links.append(a[a.index(f"https://www.nytimes.com/{year}/{str(month).zfill(2)}/{str(day+1).zfill(2)}"):a.index("l\">")+1])
+                            titles.append(a[
+                                a.index("\">")+2
+                                :
+                                a.index("</a>")
+                            ])
+                            links.append(a[
+                                a.index(f"https://www.nytimes.com/{year}/{str(month).zfill(2)}/{str(day+1).zfill(2)}")
+                                :
+                                a.index("l\">")+1
+                            ])
                             dates.append(f"{year}-{str(month).zfill(2)}-{str(day+1).zfill(2)}")
                         elif "https://www.nytimes.com/article/" in a:
-                            titles.append(a[a.index("\">")+2:a.index("</a>")])
-                            links.append(a[a.index("https://www.nytimes.com/article"):a.index("l\">")+1])
+                            titles.append(a[
+                                a.index("\">")+2
+                                :
+                                a.index("</a>")
+                            ])
+                            links.append(a[
+                                a.index("https://www.nytimes.com/article")
+                                :
+                                a.index("l\">")+1
+                            ])
                             dates.append(f"{year}-{str(month).zfill(2)}-{str(day+1).zfill(2)}")
                         elif f"https://www.nytimes.com/20" in a:
-                            temp_link = a[a.index(f"https://www.nytimes.com/20"):a.index("l\">")+1]
-                            titles.append(a[a.index("\">")+2:a.index("</a>")])
+                            temp_link = a[
+                                a.index(f"https://www.nytimes.com/20")
+                                :
+                                a.index("l\">")+1
+                            ]
+                            titles.append(a[
+                                a.index("\">")+2
+                                :
+                                a.index("</a>")
+                            ])
                             links.append(temp_link)
                             dates.append(str(temp_link[24:34]).replace('/','-'))
 
@@ -168,7 +208,58 @@ def articles(which,start_year,end_year,start_month,end_month):
 
 
     # ---------------- BI --------------- #
+
     bi_articles = {}     # Input: 20xx-xx-xx     Output: [(title 1, link 1), (title 2, link 2), ...]
+
+    titles = [] # all article titles
+    links = [] # all article links
+    dates = [] # dates for those articles
+
+    if which[2]:
+        for year in range(start_year,end_year+1):
+            for month in range(start_month-1,end_month):
+
+                r = requests.get(bi_dict[year][month])
+                soup = BeautifulSoup(r.text, "html.parser")
+                ps = soup.find_all("p") # All links are in lis that have a date span & a sitemap-link span
+
+                for p in ps:
+                    
+                    a = str(p.contents)
+
+                    if "https://www.businessinsider.com/" in a:
+                        links.append(a[
+                            a.index('https:')
+                            :
+                            a.index('>')-1
+                        ])
+                        titles.append(a[
+                            a.index('>')+1
+                            :
+                            a.index('</a>')
+                        ])
+                        if '<br>' in a:
+                            dates.append(a[
+                                a.index('<br>')+17
+                                :
+                                a.rfind('T')
+                            ])
+                        elif '<br/>' in a:
+                             dates.append(a[
+                                a.index('<br/>')+18
+                                :
+                                a.rfind('T')
+                            ])
+        # list of all unique dates
+        date_set = list(set(dates))
+        date_set.sort()
+
+        # for each unique date, creates a list of tuples with the title & link for every article that has that date then adds that to dictionary
+        # Enumerate didn't works because of the large size :P
+        for i in range(len(date_set)):
+            bi_articles[date_set[i]] = [(titles[j],links[j]) for j in range(len(dates)) if dates[j] == date_set[i]]
+
+
 
     # ---------------- NYP --------------- #
     nyp_articles = {}    # Input: 20xx-xx-xx     Output: [(title 1, link 1), (title 2, link 2), ...]
