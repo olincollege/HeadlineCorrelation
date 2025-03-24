@@ -4,7 +4,9 @@ import itertools
 from bs4 import BeautifulSoup # Imports bs4
 import sitemaps
 from selenium import webdriver
-import time
+import xml.etree.ElementTree as ET
+import lxml
+
 
 def articles(which,start_year,end_year,start_month,end_month):
     '''
@@ -263,6 +265,8 @@ def articles(which,start_year,end_year,start_month,end_month):
 
 
 
+
+
     # ---------------- NYP --------------- #           NYP may not work T-T
 
     nyp_articles = {}    # Input: 20xx-xx-xx     Output: [(title 1, link 1), (title 2, link 2), ...]
@@ -304,6 +308,7 @@ def articles(which,start_year,end_year,start_month,end_month):
         # Enumerate didn't works because of the large size :P
         for i in range(len(date_set)):
             nyp_articles[date_set[i]] = [(titles[j],links[j]) for j in range(len(dates)) if dates[j] == date_set[i]]
+
 
 
 
@@ -354,7 +359,42 @@ def articles(which,start_year,end_year,start_month,end_month):
 
 
 
+
     # ---------------- FOX --------------- #
     fox_articles = {}    # Input: 20xx-xx-xx     Output: [(title 1, link 1), (title 2, link 2), ...]
+
+    titles = [] # all article titles
+    links = [] # all article links
+    dates = [] # dates for those articles
+
+    if which[5]:
+        for i in range(50):
+
+            r = requests.get(fox_links[i])
+            soup = BeautifulSoup(r.text, 'lxml')
+            urls = soup.find_all("url") # All links are in lis that have 1 <a> with an href (link) & title
+
+            for url in urls:
+                for i in url.descendants:
+                    data = str(i)
+                    if "<loc>" in data:
+                        links.append(data[5:-6])
+                        titles.append(data[data[:-6].rfind('/')+1:-6].replace('-',' '))
+                    if "<lastmod>" in data:
+                        dates.append(data[9:-25])
+
+        si = dates.index(f"{end_year}-{str(end_month).zfill(2)}-{str(mday[end_month-1]).zfill(2)}")
+        ei = len(dates)-dates[::-1].index(f"{start_year}-{str(start_month).zfill(2)}-01")
+        
+        titles = titles[si:ei]
+        links = links[si:ei]
+        dates = dates[si:ei]
+
+        # list of all unique dates
+        date_set = list(set(dates))
+        date_set.sort()
+
+        for i in range(len(date_set)):
+            fox_articles[date_set[i]] = [(titles[j],links[j]) for j in range(len(dates)) if dates[j] == date_set[i]]
 
     return [cnn_articles, nyt_articles, bi_articles, nyp_articles, dm_articles, fox_articles]
