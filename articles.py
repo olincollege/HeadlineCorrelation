@@ -361,7 +361,6 @@ def articles(start_year, end_year, start_month, end_month):
     """
 
     [cnn_dict, nyt_dict, bi_dict, et_dict] = sitemaps.sitemaps()
-
     cnn_articles = cnn(cnn_dict, start_year, end_year, start_month, end_month)
     nyt_articles = nyt(nyt_dict, start_year, end_year, start_month, end_month)
     bi_articles = b_i(bi_dict, start_year, end_year, start_month, end_month)

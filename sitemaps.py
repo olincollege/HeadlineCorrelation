@@ -43,10 +43,20 @@ def sitemaps():
         for i in range(2014, 2025)
     }
 
-    # Fox
-    fox_dict = ["https://www.foxnews.com/sitemap.xml?type=articles"] + [
-        f"https://www.foxnews.com/sitemap.xml?type=articles&page={i}"
-        for i in range(2, 161)
-    ]
+    # Epoch Times
+    et_dict = {
+        i: [
+            f"https://www.theepochtimes.com/sitemap/sitemap-"
+            f"{i}-{str(j).zfill(2)}-us.xml"
+            for j in range(1, 13)
+        ]
+        for i in range(2014, 2025)
+    }
 
-    return [cnn_dict, nyt_dict, bi_dict, fox_dict]
+    # Fox
+    # fox_dict = ["https://www.foxnews.com/sitemap.xml?type=articles"] + [
+    #     f"https://www.foxnews.com/sitemap.xml?type=articles&page={i}"
+    #     for i in range(2, 161)
+    # ]
+
+    return [cnn_dict, nyt_dict, bi_dict, et_dict]
