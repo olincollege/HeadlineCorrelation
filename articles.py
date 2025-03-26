@@ -3,6 +3,10 @@
 import requests
 from bs4 import BeautifulSoup  # Imports bs4
 import sitemaps
+import itertools
+
+import pandas as pd
+import numpy as np
 
 mday = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
@@ -51,7 +55,7 @@ def cnn(cnn_dict, start_year, end_year, start_month, end_month):
 
     for year in range(start_year, end_year + 1):
         for month in range(start_month - 1, end_month):
-            pulled_data = requests.get(cnn_dict[year][month], timeout=100)
+            pulled_data = requests.get(cnn_dict[year][month], timeout=5000)
             lis = BeautifulSoup(pulled_data.text, "html.parser").find_all("li")
             # All links in lis have a date span & a sitemap-link span
 
@@ -77,17 +81,17 @@ def cnn(cnn_dict, start_year, end_year, start_month, end_month):
                         )
                         links.append(data[36 : 36 + data[36:].index('"')])
 
-                        # the date from date structure is when it was updated
-                        # most recently, not always when it was posted,
-                        # so in the cases where the link has the date it was
-                        # posted we refer to the link's date over the one
-                        # from the date span
-                        if "com/20" in data:
-                            dates[-1] = data[
-                                data.index("com/20")
-                                + 4 : data.index("com/20")
-                                + 14
-                            ].replace("/", "-")
+                    # the date from date structure is when it was updated
+                    # most recently, not always when it was posted,
+                    # so in the cases where the link has the date it was
+                    # posted we refer to the link's date over the one
+                    # from the date span
+                    if ("sitemap-link" in data) & ("com/20" in data):
+                        dates[-1] = data[
+                            data.index("com/20")
+                            + 4 : data.index("com/20")
+                            + 14
+                        ].replace("/", "-")
 
     return make_list({}, titles, links, dates)
 
@@ -113,7 +117,7 @@ def nyt(nyt_dict, start_year, end_year, start_month, end_month):
         for month in range(start_month, end_month + 1):
             for day in range(mday[month - 1]):
                 pulled_data = requests.get(
-                    nyt_dict[year][month][day], timeout=100
+                    nyt_dict[year][month][day], timeout=5000
                 )
                 lis = BeautifulSoup(pulled_data.text, "html.parser").find_all(
                     "li"
@@ -211,8 +215,7 @@ def b_i(bi_dict, start_year, end_year, start_month, end_month):
 
     for year in range(start_year, end_year + 1):
         for month in range(start_month - 1, end_month):
-
-            pulled_data = requests.get(bi_dict[year][month], timeout=100)
+            pulled_data = requests.get(bi_dict[year][month], timeout=5000)
             paragraphs = BeautifulSoup(
                 pulled_data.text, "html.parser"
             ).find_all("p")
@@ -265,7 +268,7 @@ def fox(fox_dict, start_year, end_year, start_month, end_month):
 
     for i in range(50):
 
-        pulled_data = requests.get(fox_dict[i], timeout=100)
+        pulled_data = requests.get(fox_dict[i], timeout=5000)
         urls = BeautifulSoup(pulled_data.text, "lxml").find_all("url")
 
         for url in urls:
@@ -308,25 +311,92 @@ def articles(start_year, end_year, start_month, end_month):
         end_month: int representing the starting month
 
     Returns:
-     [cnn_articles,
+        [
+        cnn_articles,
         nyt_articles,
         bi_articles,
         nyp_articles,
         dm_articles,
         fox_articles,
     ]: list of articles
-
     """
 
-    [cnn_dict, nyt_dict, bi_dict, fox_dict] = sitemaps.sitemaps()
+    [cnn_dict, nyt_dict, bi_dict] = sitemaps.sitemaps()
 
     cnn_articles = cnn(cnn_dict, start_year, end_year, start_month, end_month)
     nyt_articles = nyt(nyt_dict, start_year, end_year, start_month, end_month)
     bi_articles = b_i(bi_dict, start_year, end_year, start_month, end_month)
-    fox_articles = fox(fox_dict, start_year, end_year, start_month, end_month)
+    # fox_articles = fox(fox_dict, start_year, end_year, start_month, end_month)
     return [
         cnn_articles,
         nyt_articles,
         bi_articles,
-        fox_articles,
+        # fox_articles,
     ]
+
+
+def get_data(start_year, end_year, start_month, end_month):
+    """
+    Scrapes article names from various new sites and puts
+    them in a dataframe and provides an example dataframe
+    to more easily visualize how the data is stored
+
+    Assumptions:
+        1. Format of the sitemaps does not change over time
+
+    Args:
+        start_year: int representing the starting year
+        end_year: int representing the ending year
+        start_month: int representing the starting month
+        end_month: int representing the starting month
+
+    Returns:
+        [
+        dataframe,
+        example_dataframe
+    ]: dataframe of all scraped data and dataframe to use
+       show how data is stored
+    """
+
+    dates = list(
+        itertools.chain.from_iterable(
+            [
+                list(
+                    itertools.chain.from_iterable(
+                        [
+                            [
+                                f"{year}-{str(month).zfill(2)}-{str(day+1).zfill(2)}"
+                                for day in range(mday[month - 1])
+                            ]
+                            for month in range(start_month, end_month + 1)
+                        ]
+                    )
+                )
+                for year in range(start_year, end_year + 1)
+            ]
+        )
+    )
+
+    news_data = {}
+    example_data = {}
+
+    [cnn_articles, nyt_articles, bi_articles] = articles(
+        start_year, end_year, start_month, end_month
+    )
+
+    for date in dates:
+        news_data[date] = [
+            cnn_articles[date],
+            nyt_articles[date],
+            bi_articles[date],
+        ]
+        example_data[date] = [
+            "list",
+            "list",
+            "list",
+        ]
+
+    dataframe = pd.DataFrame(news_data, index=["CNN", "NYT", "BI"])
+    example_dataframe = pd.DataFrame(example_data, index=["CNN", "NYT", "BI"])
+
+    return [dataframe, example_dataframe]

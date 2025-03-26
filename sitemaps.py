@@ -71,56 +71,10 @@ def sitemaps():
     )
 
 
-    # New York Post
-    nyp_dict = dict(
-        [
-            (
-                i,
-                dict(
-                    [
-                        (
-                            j,
-                            [
-                                f"https://nypost.com/{i}/{str(j).zfill(2)}/{str(k).zfill(2)}/"
-                                for k in range(1, mday[j - 1]+1)
-                            ],
-                        )
-                        for j in range(1, 13)
-                    ]
-                ),
-            )
-            for i in range(2014, 2025)
-        ]
-    )
-
-
-    # Daily Mail
-    dm_dict = dict(
-        [
-            (
-                i,
-                dict(
-                    [
-                        (
-                            j,
-                            [
-                                f"https://www.dailymail.co.uk/home/sitemaparchive/day_{i}{str(j).zfill(2)}{str(k).zfill(2)}.html"
-                                for k in range(1, mday[j - 1]+1)
-                            ],
-                        )
-                        for j in range(1, 13)
-                    ]
-                ),
-            )
-            for i in range(2014, 2025)
-        ]
-    )
-
-
     # Fox
     fox_links = ["https://www.foxnews.com/sitemap.xml?type=articles"] + [
         f"https://www.foxnews.com/sitemap.xml?type=articles&page={i}"
         for i in range(2, 161)
     ]
 
-    return [cnn_dict, nyt_dict, bi_dict, nyp_dict, dm_dict, fox_links]
+    return [cnn_dict, nyt_dict, bi_dict]
