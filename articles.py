@@ -1,12 +1,10 @@
 """Module used to scrape html data"""
 
+import itertools
 import requests
 from bs4 import BeautifulSoup  # Imports bs4
-import sitemaps
-import itertools
-
 import pandas as pd
-import numpy as np
+import sitemaps
 
 mday = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
@@ -88,9 +86,7 @@ def cnn(cnn_dict, start_year, end_year, start_month, end_month):
                     # from the date span
                     if ("sitemap-link" in data) & ("com/20" in data):
                         dates[-1] = data[
-                            data.index("com/20")
-                            + 4 : data.index("com/20")
-                            + 14
+                            data.index("com/20") + 4 : data.index("com/20") + 14
                         ].replace("/", "-")
 
     return make_list({}, titles, links, dates)
@@ -365,7 +361,8 @@ def get_data(start_year, end_year, start_month, end_month):
                     itertools.chain.from_iterable(
                         [
                             [
-                                f"{year}-{str(month).zfill(2)}-{str(day+1).zfill(2)}"
+                                f"{year}-{str(month).zfill(2)}"
+                                f"-{str(day+1).zfill(2)}"
                                 for day in range(mday[month - 1])
                             ]
                             for month in range(start_month, end_month + 1)
