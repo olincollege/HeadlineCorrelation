@@ -245,6 +245,49 @@ def b_i(bi_dict, start_year, end_year, start_month, end_month):
     return make_list({}, titles, links, dates)
 
 
+def et(et_dict, start_year, end_year, start_month, end_month):
+    """
+    Returns a list of all the articles in a given time frame
+
+    Args:
+        start_year: int representing the starting year
+        end_year: int representing the ending year
+        start_month: int representing the starting month
+        end_month: int representing the starting month
+
+    Returns:
+        et_articles: list of et articles
+    """
+    titles = []  # all article titles
+    links = []  # all article links
+    dates = []  # dates for those articles
+
+    for year in range(start_year, end_year + 1):
+        for month in range(start_month - 1, end_month):
+
+            pulled_data = requests.get(et_dict[year][month], timeout=5000)
+            urls = BeautifulSoup(pulled_data.text, "lxml").find_all("url")
+
+            for url in urls:
+                for i in url.descendants:
+                    data = str(i)
+                    if "<loc>" in data:
+                        links.append(data[5:-6])
+                        titles.append(
+                            data[data[:-6].rfind("/") + 1 : -6].replace(
+                                "-", " "
+                            )
+                        )
+                    if "<lastmod>" in data:
+                        dates.append(data[9:-25])
+
+    print(links)
+    print(titles)
+    print(dates)
+
+    return make_list({}, titles, links, dates)
+
+
 def fox(fox_dict, start_year, end_year, start_month, end_month):
     """
     Returns a list of all the articles in a given time frame
@@ -317,16 +360,18 @@ def articles(start_year, end_year, start_month, end_month):
     ]: list of articles
     """
 
-    [cnn_dict, nyt_dict, bi_dict] = sitemaps.sitemaps()
+    [cnn_dict, nyt_dict, bi_dict, et_dict] = sitemaps.sitemaps()
 
     cnn_articles = cnn(cnn_dict, start_year, end_year, start_month, end_month)
     nyt_articles = nyt(nyt_dict, start_year, end_year, start_month, end_month)
     bi_articles = b_i(bi_dict, start_year, end_year, start_month, end_month)
+    et_articles = et(et_dict, start_year, end_year, start_month, end_month)
     # fox_articles = fox(fox_dict, start_year, end_year, start_month, end_month)
     return [
         cnn_articles,
         nyt_articles,
         bi_articles,
+        et_articles,
         # fox_articles,
     ]
 
@@ -377,7 +422,7 @@ def get_data(start_year, end_year, start_month, end_month):
     news_data = {}
     example_data = {}
 
-    [cnn_articles, nyt_articles, bi_articles] = articles(
+    [cnn_articles, nyt_articles, bi_articles, et_articles] = articles(
         start_year, end_year, start_month, end_month
     )
 
@@ -386,14 +431,18 @@ def get_data(start_year, end_year, start_month, end_month):
             cnn_articles[date],
             nyt_articles[date],
             bi_articles[date],
+            et_articles[date],
         ]
         example_data[date] = [
             "list",
             "list",
             "list",
+            "list",
         ]
 
-    dataframe = pd.DataFrame(news_data, index=["CNN", "NYT", "BI"])
-    example_dataframe = pd.DataFrame(example_data, index=["CNN", "NYT", "BI"])
+    dataframe = pd.DataFrame(news_data, index=["CNN", "NYT", "BI", "ET"])
+    example_dataframe = pd.DataFrame(
+        example_data, index=["CNN", "NYT", "BI", "ET"]
+    )
 
     return [dataframe, example_dataframe]

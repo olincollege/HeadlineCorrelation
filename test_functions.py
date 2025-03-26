@@ -12,7 +12,7 @@ def most_common(start_year,end_year,start_month,end_month,word,data):
 
     mday = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
-    news_names = ['CNN','NYT','BI']
+    news_names = ['CNN','NYT','BI','ET']
 
     words = {}
     title_count = {}
@@ -51,7 +51,7 @@ def word_sentiment(start_year,end_year,start_month,end_month,word,data):
 
     mday = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
-    news_names = ['CNN','NYT','BI']
+    news_names = ['CNN','NYT','BI','ET']
 
     values = {}
 
