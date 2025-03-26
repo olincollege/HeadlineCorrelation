@@ -3,20 +3,6 @@ def sitemaps():
     Docstring
     '''
 
-    months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-    ]
     mday = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     # CNN
     cnn_dict = dict(

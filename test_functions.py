@@ -8,17 +8,11 @@ import re
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 
-def most_common(which,start_year,end_year,start_month,end_month,word,data):
+def most_common(start_year,end_year,start_month,end_month,word,data):
 
     mday = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
-    news_names = []
-    if which[0]: news_names.append('CNN')
-    if which[1]: news_names.append('NYT')
-    if which[2]: news_names.append('BI')
-    if which[5]: news_names.append('FOX')
-
-    data = pd.DataFrame(data)
+    news_names = ['CNN','NYT','BI']
 
     words = {}
     title_count = {}
@@ -53,17 +47,11 @@ def most_common(which,start_year,end_year,start_month,end_month,word,data):
 
 
 
-def sentiment(which,start_year,end_year,start_month,end_month,word,data):
+def word_sentiment(start_year,end_year,start_month,end_month,word,data):
 
     mday = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
-    news_names = []
-    if which[0]: news_names.append('CNN')
-    if which[1]: news_names.append('NYT')
-    if which[2]: news_names.append('BI')
-    if which[5]: news_names.append('FOX')
-
-    data = pd.DataFrame(data)
+    news_names = ['CNN','NYT','BI']
 
     values = {}
 
