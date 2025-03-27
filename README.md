@@ -7,29 +7,8 @@ This project uses publicly available sitemaps and headlines from prominent news 
 ## Dependencies
 
 This project uses the following libraries that can be installed by using pip install -
-* **requests** - used to pull data using html requests
 ``` python
-pip install requests
-```
-* **beautifulsoup4** - used to analyze data
-``` python
-pip install bs4
-``` 
-* **nltk** - used to perform sentiment analysis on data
-``` python
-pip install nltk
-```
-* **pandas** - used for tabularizing data
-``` python
-pip install pandas
-```
-* **numpy** - used for data organization
-``` python
-pip install numpy
-```
-* **matplotlib** - used for data visualization
-``` python
-pip install matplotlib
+pip install -r requirements.txt
 ```
 
 ### Installing
