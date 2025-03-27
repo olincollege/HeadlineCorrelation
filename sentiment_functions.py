@@ -100,13 +100,14 @@ def plot_sentiment_comparison(issue_values,news_blue,news_red,title):
     
     '''
 
-    colors = ['blue','red','black','blue','red']
-    x = np.array([f"{news_blue} pos", f"{news_red} pos", "", f"{news_blue} neg", f"{news_red} neg"])
-    y = np.array([issue_values[news_blue]['pos'], issue_values[news_red]['pos'], 0, issue_values[news_blue]['neg'], issue_values[news_red]['neg']])
+    colors = ['blue','black','red']
+    x = np.array([f"{news_blue} pos","", f"{news_red} pos"])
+    y = np.array([issue_values[news_blue]['compound'],0, issue_values[news_red]['compound']])
 
     plt.bar(x,y,color=colors)
-    plt.ylim(bottom=0,top=0.2)
+    plt.ylim(bottom=-0.5,top=0.5)
     plt.title(title)
+    plt.axhline()
     plt.show()
 
 
