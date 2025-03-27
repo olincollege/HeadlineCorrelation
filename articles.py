@@ -283,6 +283,14 @@ def articles(start_year, end_year, start_month, end_month):
         et_articles,
     ]
 
+def try_date(data,date):
+    try:
+        ret = data[date]
+    except:
+        ret = []
+    
+    return ret
+
 
 def get_data(start_year, end_year, start_month, end_month):
     """
@@ -336,10 +344,10 @@ def get_data(start_year, end_year, start_month, end_month):
 
     for date in dates:
         news_data[date] = [
-            cnn_articles[date],
-            nyt_articles[date],
-            bi_articles[date],
-            et_articles[date],
+            try_date(cnn_articles,date),
+            try_date(nyt_articles,date),
+            try_date(bi_articles,date),
+            try_date(et_articles,date),
         ]
     
     for i in range(4):
