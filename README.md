@@ -16,7 +16,8 @@ pip install -r requirements.txt
 ```
 ### Executing the program
 
-To run the program, simply run the python cells in main.ipynb
+To run the program, simply run the python cells in HeadlineCorrelation.ipynb.
+* **Note** - For ease of running and efficiency, we have created a database of all the scraped data, and so the analysis can be performed without an internet connection and faster. We have commented out this code, but can be used if really needed. Otherwise, the essay contains code to use much smaller spans of data to still scrape and display the visualizations.
 
 ## Authors
 
