@@ -14,10 +14,12 @@ def make_list(article_dict, titles, dates):
     Returns consolidated article dictionary
 
     Args:
-        article_dict:
-        titles:
-        links:
-        dates:
+        article_dict: empty dict
+        titles: list of titles
+        dates: list of dates
+
+    Returns:
+        article_dict: dict containing article titles
 
     """
     # list of all unique dates
@@ -283,12 +285,24 @@ def articles(start_year, end_year, start_month, end_month):
         et_articles,
     ]
 
-def try_date(data,date):
+
+def try_date(data, date):
+    """
+    Takes care of KeyError
+
+    Args:
+        data: list of articles
+        date: string representing date
+    Returns:
+        ret: string representing article name on that date OR
+        empty list if none
+
+    """
     try:
         ret = data[date]
-    except:
+    except KeyError:
         ret = []
-    
+
     return ret
 
 
@@ -344,12 +358,12 @@ def get_data(start_year, end_year, start_month, end_month):
 
     for date in dates:
         news_data[date] = [
-            try_date(cnn_articles,date),
-            try_date(nyt_articles,date),
-            try_date(bi_articles,date),
-            try_date(et_articles,date),
+            try_date(cnn_articles, date),
+            try_date(nyt_articles, date),
+            try_date(bi_articles, date),
+            try_date(et_articles, date),
         ]
-    
+
     for i in range(4):
         example_data[dates[i]] = [
             "list",
