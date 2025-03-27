@@ -1,33 +1,61 @@
-# Python Project Template Repository
+# Headline Correlation
+## Description
 
-This is a template repository for a Python project. Feel free to use and edit
-this repository (including this file) for your needs. Below, find some
-instructions and tips for using this template repository.
+This project uses publicly available sitemaps and headlines from prominent news websites [New York Times, Business Insider, CNN, Epoch Times] to analyze how much they differ in reporting certain topics.
 
-## How to Use
 
-Click on the "Use this template" button in the top right corner to create a new
-repository based on this template. If this is for a class project, we ask that
-you keep it in the `olincollege` GitHub organization, and that you refrain from
-keeping the repository private. This will ensure that relevant people can access
-your repository for assessment, etc.
+## Dependencies
 
-## Requirements
-
-The `requirements.txt` file is blank and should be filled out with any project
-dependencies. There is a Python package called `pipreqs` that autogenerates the
-contents of the `requirements.txt` file based on the `import` statements in your
-`.py` files. To get this, run
-
+This project uses the following libraries that can be installed by using pip install -
+* **requests** - used to pull data using html requests
+``` python
+pip install requests
 ```
-pip install pipreqs
+* **beautifulsoup4** - used to analyze data
+``` python
+pip install bs4
+``` 
+* **nltk** - used to perform sentiment analysis on data
+``` python
+pip install nltk
+```
+* **pandas** - used for tabularizing data
+``` python
+pip install pandas
+```
+* **numpy** - used for data organization
+``` python
+pip install numpy
+```
+* **matplotlib** - used for data visualization
+``` python
+pip install matplotlib
 ```
 
-Then, in the root of your project repository, run:
+### Installing
 
+* How/where to download your program
+* Any modifications needed to be made to files/folders
+
+### Executing program
+
+* To run the program, simply run the python cells in main.ipynb
+* Step-by-step bullets
 ```
-pipreqs --mode compat
+code blocks for commands
 ```
 
-If you already have a `requirements.txt`, the above command will ask you to
-rerun the command with the `--force` flag to overwrite it.
+## Help
+
+Any advise for common problems or issues.
+```
+command to run if program contains helper info
+```
+
+## Authors
+
+Antara Mazumdar, Grant Rechtin
+
+## Acknowledgments
+
+Inspiration, code snippets, etc.
