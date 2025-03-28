@@ -91,7 +91,7 @@ def plot_sentiment_comparison(issue_values, news_blue, news_red, title):
     """
 
     colors = ["blue", "black", "red"]
-    x = np.array([f"{news_blue} pos", "", f"{news_red} pos"])
+    x = np.array([f"{news_blue} compound", "", f"{news_red} compound"])
     y = np.array(
         [
             issue_values[news_blue]["compound"],
